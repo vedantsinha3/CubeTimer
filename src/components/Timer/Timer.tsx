@@ -8,6 +8,8 @@ const READY_HOLD_TIME = 300;
 interface TimerProps {
   onSolveComplete?: (time: number) => void;
   ao5?: number | null;
+  ao12?: number | null;
+  ao100?: number | null;
 }
 
 const pulse = keyframes`
@@ -81,22 +83,39 @@ const StatusDot = styled.div<{ $status: TimerStatus }>`
   transition: background-color 0.15s ease;
 `;
 
-const Ao5Display = styled.div<{ $visible: boolean }>`
-  font-family: ${({ theme }) => theme.fonts.mono};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  color: ${({ theme }) => theme.colors.textMuted};
-  margin-top: ${({ theme }) => theme.spacing.md};
+const AveragesRow = styled.div<{ $visible: boolean }>`
+  display: flex;
+  gap: ${({ theme }) => theme.spacing.xl};
+  margin-top: ${({ theme }) => theme.spacing.lg};
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transition: opacity 0.2s ease;
 
-  span {
-    color: ${({ theme }) => theme.colors.textDim};
-    font-size: ${({ theme }) => theme.fontSizes.sm};
-    margin-right: ${({ theme }) => theme.spacing.sm};
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    gap: ${({ theme }) => theme.spacing.md};
   }
 `;
 
-export function Timer({ onSolveComplete, ao5 }: TimerProps) {
+const AverageItem = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-family: ${({ theme }) => theme.fonts.mono};
+`;
+
+const AverageLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.textDim};
+  text-transform: lowercase;
+  margin-bottom: 2px;
+`;
+
+const AverageValue = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  color: ${({ theme }) => theme.colors.textMuted};
+  font-weight: 500;
+`;
+
+export function Timer({ onSolveComplete, ao5, ao12, ao100 }: TimerProps) {
   const { time, status, startTimer, stopTimer, resetTimer, setReady } = useTimer();
   const holdTimeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
@@ -217,10 +236,20 @@ export function Timer({ onSolveComplete, ao5 }: TimerProps) {
     >
       <StatusDot $status={status} />
       <TimeDisplay $status={status}>{formatTime(time)}</TimeDisplay>
-      <Ao5Display $visible={status !== 'running' && ao5 !== null && ao5 !== undefined}>
-        <span>ao5</span>
-        {ao5 !== null && ao5 !== undefined ? formatTime(ao5) : '—'}
-      </Ao5Display>
+      <AveragesRow $visible={status !== 'running'}>
+        <AverageItem>
+          <AverageLabel>ao5</AverageLabel>
+          <AverageValue>{ao5 != null ? formatTime(ao5) : '—'}</AverageValue>
+        </AverageItem>
+        <AverageItem>
+          <AverageLabel>ao12</AverageLabel>
+          <AverageValue>{ao12 != null ? formatTime(ao12) : '—'}</AverageValue>
+        </AverageItem>
+        <AverageItem>
+          <AverageLabel>ao100</AverageLabel>
+          <AverageValue>{ao100 != null ? formatTime(ao100) : '—'}</AverageValue>
+        </AverageItem>
+      </AveragesRow>
       <Instructions $visible={status !== 'running'}>
         {getInstructions()}
       </Instructions>

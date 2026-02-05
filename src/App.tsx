@@ -134,6 +134,8 @@ function App() {
   const currentScrambleRef = useRef<string>('');
   const { solves, addSolve } = useSolves();
   const ao5 = calculateAverageOfN(solves, 5);
+  const ao12 = calculateAverageOfN(solves, 12);
+  const ao100 = calculateAverageOfN(solves, 100);
 
   const handleScrambleChange = (scramble: string) => {
     currentScrambleRef.current = scramble;
@@ -195,7 +197,7 @@ function App() {
           onScrambleChange={handleScrambleChange}
           triggerNew={scrambleTrigger}
         />
-        <Timer onSolveComplete={handleSolveComplete} ao5={ao5} />
+        <Timer onSolveComplete={handleSolveComplete} ao5={ao5} ao12={ao12} ao100={ao100} />
       </MainContent>
     </AppContainer>
   );
