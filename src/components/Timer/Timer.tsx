@@ -11,6 +11,8 @@ interface TimerProps {
   ao12?: number | null;
   ao100?: number | null;
   isPB?: boolean;
+  isBestAo5?: boolean;
+  isBestAo100?: boolean;
 }
 
 const pulse = keyframes`
@@ -158,13 +160,25 @@ const AverageLabel = styled.span`
   margin-bottom: 2px;
 `;
 
-const AverageValue = styled.span`
-  font-size: ${({ theme }) => theme.fontSizes.md};
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-weight: 500;
+const averageGlow = keyframes`
+  0%, 100% { 
+    color: #737373;
+    text-shadow: none;
+  }
+  50% { 
+    color: #22c55e;
+    text-shadow: 0 0 12px rgba(34, 197, 94, 0.8), 0 0 24px rgba(34, 197, 94, 0.4);
+  }
 `;
 
-export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB }: TimerProps) {
+const AverageValue = styled.span<{ $isBest?: boolean }>`
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  color: ${({ theme, $isBest }) => ($isBest ? theme.colors.primary : theme.colors.textMuted)};
+  font-weight: 500;
+  animation: ${({ $isBest }) => ($isBest ? averageGlow : 'none')} 2s ease-in-out infinite;
+`;
+
+export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBestAo100 }: TimerProps) {
   const { time, status, startTimer, stopTimer, resetTimer, setReady } = useTimer();
   const holdTimeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
@@ -291,7 +305,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB }: TimerProps) {
       <AveragesRow $visible={status !== 'running'}>
         <AverageItem>
           <AverageLabel>ao5</AverageLabel>
-          <AverageValue>{ao5 != null ? formatTime(ao5) : '—'}</AverageValue>
+          <AverageValue $isBest={isBestAo5}>{ao5 != null ? formatTime(ao5) : '—'}</AverageValue>
         </AverageItem>
         <AverageItem>
           <AverageLabel>ao12</AverageLabel>
@@ -299,7 +313,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB }: TimerProps) {
         </AverageItem>
         <AverageItem>
           <AverageLabel>ao100</AverageLabel>
-          <AverageValue>{ao100 != null ? formatTime(ao100) : '—'}</AverageValue>
+          <AverageValue $isBest={isBestAo100}>{ao100 != null ? formatTime(ao100) : '—'}</AverageValue>
         </AverageItem>
       </AveragesRow>
       <Instructions $visible={status !== 'running'}>

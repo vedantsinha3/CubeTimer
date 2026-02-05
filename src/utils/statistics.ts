@@ -64,6 +64,26 @@ export function calculateAverageOfN(solves: Solve[], n: number): number | null {
 }
 
 /**
+ * Get the best (minimum) average of N over all sliding windows in solve history.
+ * Returns null if no valid aoN exists.
+ */
+export function getBestAverageOfN(solves: Solve[], n: number): number | null {
+  if (solves.length < n) return null;
+
+  let best: number | null = null;
+
+  for (let i = 0; i <= solves.length - n; i++) {
+    const window = solves.slice(i, i + n);
+    const avg = calculateAverageOfN(window, n);
+    if (avg !== null && (best === null || avg < best)) {
+      best = avg;
+    }
+  }
+
+  return best;
+}
+
+/**
  * Get the best (fastest) solve time
  */
 export function getBestTime(solves: Solve[]): number | null {

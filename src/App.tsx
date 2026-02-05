@@ -6,7 +6,7 @@ import { Statistics } from './components/Statistics';
 import { History } from './components/History';
 import { Confetti } from './components/Confetti';
 import { useSolves } from './context/SolvesContext';
-import { calculateAverageOfN, getBestTime } from './utils/statistics';
+import { calculateAverageOfN, getBestTime, getBestAverageOfN } from './utils/statistics';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -139,6 +139,10 @@ function App() {
   const ao5 = calculateAverageOfN(solves, 5);
   const ao12 = calculateAverageOfN(solves, 12);
   const ao100 = calculateAverageOfN(solves, 100);
+  const bestAo5 = getBestAverageOfN(solves, 5);
+  const bestAo100 = getBestAverageOfN(solves, 100);
+  const isBestAo5 = ao5 != null && bestAo5 != null && Math.abs(ao5 - bestAo5) < 1;
+  const isBestAo100 = ao100 != null && bestAo100 != null && Math.abs(ao100 - bestAo100) < 1;
 
   const handleScrambleChange = (scramble: string) => {
     currentScrambleRef.current = scramble;
@@ -221,6 +225,8 @@ function App() {
           ao12={ao12} 
           ao100={ao100}
           isPB={isPB}
+          isBestAo5={isBestAo5}
+          isBestAo100={isBestAo100}
         />
       </MainContent>
 
