@@ -72,6 +72,7 @@ const TimerContainer = styled.div`
   justify-content: center;
   flex: 1;
   width: 100%;
+  transform: translateY(-10%);
   user-select: none;
   cursor: pointer;
   padding: ${({ theme }) => theme.spacing.xl};
@@ -153,11 +154,18 @@ const Instructions = styled.p<{ $visible: boolean }>`
   letter-spacing: 0.02em;
 `;
 
-const StatusDot = styled.div<{ $status: TimerStatus }>`
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
+const StatusIndicator = styled.div`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
   margin-bottom: ${({ theme }) => theme.spacing.lg};
+`;
+
+
+const StatusDot = styled.div<{ $status: TimerStatus }>`
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
   background-color: ${({ theme, $status }) => {
     switch ($status) {
       case 'ready':
@@ -171,6 +179,26 @@ const StatusDot = styled.div<{ $status: TimerStatus }>`
     }
   }};
   transition: background-color 0.15s ease;
+  box-shadow: ${({ theme, $status }) => {
+    switch ($status) {
+      case 'ready':
+        return `0 0 8px ${theme.colors.timerReady}`;
+      case 'running':
+        return `0 0 8px ${theme.colors.warning}`;
+      default:
+        return 'none';
+    }
+  }};
+`;
+
+const StatusLabel = styled.span<{ $status: TimerStatus }>`
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  color: ${({ theme }) => theme.colors.textDim};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  opacity: ${({ $status }) => ($status === 'idle' ? 0.5 : 1)};
+  transition: opacity 0.15s ease;
 `;
 
 const AveragesRow = styled.div<{ $visible: boolean }>`
@@ -351,7 +379,15 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
       <WorstBadge $visible={isWorstSolve === true && status === 'stopped' && !isPB}>
         {worstMessageRef.current}
       </WorstBadge>
-      <StatusDot $status={status} />
+      <StatusIndicator>
+        <StatusDot $status={status} />
+        <StatusLabel $status={status}>
+          {status === 'idle' && 'Ready to solve'}
+          {status === 'ready' && 'Ready!'}
+          {status === 'running' && 'Solving...'}
+          {status === 'stopped' && 'Complete'}
+        </StatusLabel>
+      </StatusIndicator>
       <TimeDisplay $status={status} $isPB={isPB} $isWorstSolve={isWorstSolve}>{formatTime(time)}</TimeDisplay>
       <AveragesRow $visible={status !== 'running'}>
         <AverageItem>
