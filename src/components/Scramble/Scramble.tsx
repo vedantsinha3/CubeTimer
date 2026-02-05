@@ -4,7 +4,7 @@ import { generateScramble } from '../../utils/scrambleGenerator';
 
 interface ScrambleProps {
   onScrambleChange?: (scramble: string) => void;
-  triggerNew?: number; // Increment to trigger new scramble
+  triggerNew?: number;
 }
 
 const ScrambleContainer = styled.div`
@@ -13,6 +13,15 @@ const ScrambleContainer = styled.div`
   align-items: center;
   padding: ${({ theme }) => theme.spacing.lg};
   background-color: ${({ theme }) => theme.colors.surface};
+  border-radius: ${({ theme }) => theme.borderRadius.lg};
+`;
+
+const ScrambleLabel = styled.span`
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  color: ${({ theme }) => theme.colors.textMuted};
+  margin-bottom: ${({ theme }) => theme.spacing.sm};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
 `;
 
 const ScrambleText = styled.div`
@@ -20,9 +29,9 @@ const ScrambleText = styled.div`
   font-size: ${({ theme }) => theme.fontSizes.lg};
   color: ${({ theme }) => theme.colors.text};
   text-align: center;
-  line-height: 1.6;
-  letter-spacing: 0.05em;
-  max-width: 600px;
+  line-height: 1.8;
+  letter-spacing: 0.08em;
+  max-width: 700px;
   word-wrap: break-word;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
@@ -32,16 +41,18 @@ const ScrambleText = styled.div`
 
 const RegenerateButton = styled.button`
   margin-top: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
   background-color: ${({ theme }) => theme.colors.surfaceLight};
   color: ${({ theme }) => theme.colors.textMuted};
   font-size: ${({ theme }) => theme.fontSizes.sm};
   border-radius: ${({ theme }) => theme.borderRadius.md};
   transition: all 0.2s ease;
+  border: 1px solid transparent;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.secondary};
     color: ${({ theme }) => theme.colors.text};
+    border-color: ${({ theme }) => theme.colors.primary};
   }
 
   &:active {
@@ -58,20 +69,19 @@ export function Scramble({ onScrambleChange, triggerNew }: ScrambleProps) {
     onScrambleChange?.(newScramble);
   }, [onScrambleChange]);
 
-  // Generate new scramble when triggerNew changes
   useEffect(() => {
     if (triggerNew !== undefined && triggerNew > 0) {
       regenerate();
     }
   }, [triggerNew, regenerate]);
 
-  // Notify parent of initial scramble
   useEffect(() => {
     onScrambleChange?.(scramble);
-  }, []); // Only on mount
+  }, []);
 
   return (
     <ScrambleContainer>
+      <ScrambleLabel>Scramble</ScrambleLabel>
       <ScrambleText>{scramble}</ScrambleText>
       <RegenerateButton onClick={regenerate}>New Scramble</RegenerateButton>
     </ScrambleContainer>
