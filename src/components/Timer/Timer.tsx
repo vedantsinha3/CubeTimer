@@ -10,11 +10,35 @@ interface TimerProps {
   ao5?: number | null;
   ao12?: number | null;
   ao100?: number | null;
+  isPB?: boolean;
 }
 
 const pulse = keyframes`
   0%, 100% { opacity: 1; }
   50% { opacity: 0.5; }
+`;
+
+const glowPulse = keyframes`
+  0%, 100% { 
+    text-shadow: 0 0 20px rgba(34, 197, 94, 0.8), 0 0 40px rgba(34, 197, 94, 0.6), 0 0 60px rgba(34, 197, 94, 0.4);
+  }
+  50% { 
+    text-shadow: 0 0 30px rgba(34, 197, 94, 1), 0 0 60px rgba(34, 197, 94, 0.8), 0 0 90px rgba(34, 197, 94, 0.6);
+  }
+`;
+
+const slideIn = keyframes`
+  0% {
+    transform: translateY(-20px) scale(0.8);
+    opacity: 0;
+  }
+  50% {
+    transform: translateY(5px) scale(1.05);
+  }
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
 `;
 
 const TimerContainer = styled.div`
@@ -30,11 +54,12 @@ const TimerContainer = styled.div`
   -webkit-tap-highlight-color: transparent;
 `;
 
-const TimeDisplay = styled.div<{ $status: TimerStatus }>`
+const TimeDisplay = styled.div<{ $status: TimerStatus; $isPB?: boolean }>`
   font-family: ${({ theme }) => theme.fonts.mono};
   font-size: ${({ theme }) => theme.fontSizes.timer};
   font-weight: 600;
-  color: ${({ theme, $status }) => {
+  color: ${({ theme, $status, $isPB }) => {
+    if ($isPB && $status === 'stopped') return theme.colors.timerReady;
     switch ($status) {
       case 'ready':
         return theme.colors.timerReady;
@@ -46,11 +71,35 @@ const TimeDisplay = styled.div<{ $status: TimerStatus }>`
   }};
   letter-spacing: -0.03em;
   transition: color 0.15s ease;
-  animation: ${({ $status }) => ($status === 'running' ? pulse : 'none')} 2s ease-in-out infinite;
+  animation: ${({ $status, $isPB }) => 
+    $status === 'running' 
+      ? pulse 
+      : $isPB && $status === 'stopped'
+      ? glowPulse
+      : 'none'
+  } 2s ease-in-out infinite;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     font-size: ${({ theme }) => theme.fontSizes.timerMobile};
   }
+`;
+
+const PBBadge = styled.div<{ $visible: boolean }>`
+  display: flex;
+  align-items: center;
+  gap: ${({ theme }) => theme.spacing.sm};
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
+  background: linear-gradient(135deg, ${({ theme }) => theme.colors.primary} 0%, #16a34a 100%);
+  color: ${({ theme }) => theme.colors.background};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 700;
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  animation: ${({ $visible }) => ($visible ? slideIn : 'none')} 0.5s ease-out;
+  box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
 `;
 
 const Instructions = styled.p<{ $visible: boolean }>`
@@ -115,7 +164,7 @@ const AverageValue = styled.span`
   font-weight: 500;
 `;
 
-export function Timer({ onSolveComplete, ao5, ao12, ao100 }: TimerProps) {
+export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB }: TimerProps) {
   const { time, status, startTimer, stopTimer, resetTimer, setReady } = useTimer();
   const holdTimeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
@@ -234,8 +283,11 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100 }: TimerProps) {
       onTouchStart={handleHoldStart}
       onTouchEnd={handleHoldEnd}
     >
+      <PBBadge $visible={isPB === true && status === 'stopped'}>
+        🏆 New PB!
+      </PBBadge>
       <StatusDot $status={status} />
-      <TimeDisplay $status={status}>{formatTime(time)}</TimeDisplay>
+      <TimeDisplay $status={status} $isPB={isPB}>{formatTime(time)}</TimeDisplay>
       <AveragesRow $visible={status !== 'running'}>
         <AverageItem>
           <AverageLabel>ao5</AverageLabel>

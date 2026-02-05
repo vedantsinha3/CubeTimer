@@ -1,11 +1,12 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import styled from 'styled-components';
 import { Timer } from './components/Timer';
 import { Scramble } from './components/Scramble';
 import { Statistics } from './components/Statistics';
 import { History } from './components/History';
+import { Confetti } from './components/Confetti';
 import { useSolves } from './context/SolvesContext';
-import { calculateAverageOfN } from './utils/statistics';
+import { calculateAverageOfN, getBestTime } from './utils/statistics';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -131,6 +132,8 @@ function App() {
   const [scrambleTrigger, setScrambleTrigger] = useState(0);
   const [statsOpen, setStatsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [isPB, setIsPB] = useState(false);
+  const [showConfetti, setShowConfetti] = useState(false);
   const currentScrambleRef = useRef<string>('');
   const { solves, addSolve } = useSolves();
   const ao5 = calculateAverageOfN(solves, 5);
@@ -142,9 +145,24 @@ function App() {
   };
 
   const handleSolveComplete = (time: number) => {
+    // Check if this is a new PB before adding the solve
+    const currentBest = getBestTime(solves);
+    const isNewPB = currentBest === null || time < currentBest;
+    
     addSolve(time, currentScrambleRef.current);
     setScrambleTrigger((prev) => prev + 1);
+    
+    if (isNewPB) {
+      setIsPB(true);
+      setShowConfetti(true);
+    } else {
+      setIsPB(false);
+    }
   };
+
+  const handleConfettiComplete = useCallback(() => {
+    setShowConfetti(false);
+  }, []);
 
   const anyPanelOpen = statsOpen || historyOpen;
 
@@ -197,8 +215,16 @@ function App() {
           onScrambleChange={handleScrambleChange}
           triggerNew={scrambleTrigger}
         />
-        <Timer onSolveComplete={handleSolveComplete} ao5={ao5} ao12={ao12} ao100={ao100} />
+        <Timer 
+          onSolveComplete={handleSolveComplete} 
+          ao5={ao5} 
+          ao12={ao12} 
+          ao100={ao100}
+          isPB={isPB}
+        />
       </MainContent>
+
+      <Confetti active={showConfetti} onComplete={handleConfettiComplete} />
     </AppContainer>
   );
 }
