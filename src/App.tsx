@@ -2,6 +2,8 @@ import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Timer } from './components/Timer';
 import { Scramble } from './components/Scramble';
+import { Statistics } from './components/Statistics';
+import { History } from './components/History';
 import { useSolves } from './context/SolvesContext';
 
 const AppContainer = styled.div`
@@ -22,10 +24,49 @@ const Title = styled.h1`
   font-weight: 600;
 `;
 
-const MainContent = styled.main`
+const MainLayout = styled.div`
   flex: 1;
+  display: grid;
+  grid-template-columns: 280px 1fr 280px;
+  grid-template-rows: auto 1fr;
+  gap: ${({ theme }) => theme.spacing.lg};
+  padding: ${({ theme }) => theme.spacing.lg};
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto auto;
+  }
+`;
+
+const ScrambleSection = styled.div`
+  grid-column: 1 / -1;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    grid-column: 1;
+  }
+`;
+
+const LeftSidebar = styled.aside`
+  @media (max-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    order: 3;
+  }
+`;
+
+const CenterSection = styled.main`
   display: flex;
   flex-direction: column;
+  min-height: 300px;
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    order: 1;
+    min-height: 250px;
+  }
+`;
+
+const RightSidebar = styled.aside`
+  @media (max-width: ${({ theme }) => theme.breakpoints.desktop}) {
+    order: 2;
+  }
 `;
 
 function App() {
@@ -38,9 +79,7 @@ function App() {
   };
 
   const handleSolveComplete = (time: number) => {
-    // Save the solve
     addSolve(time, currentScrambleRef.current);
-    // Trigger new scramble after solve
     setScrambleTrigger((prev) => prev + 1);
   };
 
@@ -49,13 +88,23 @@ function App() {
       <Header>
         <Title>Cube Timer</Title>
       </Header>
-      <MainContent>
-        <Scramble
-          onScrambleChange={handleScrambleChange}
-          triggerNew={scrambleTrigger}
-        />
-        <Timer onSolveComplete={handleSolveComplete} />
-      </MainContent>
+      <MainLayout>
+        <ScrambleSection>
+          <Scramble
+            onScrambleChange={handleScrambleChange}
+            triggerNew={scrambleTrigger}
+          />
+        </ScrambleSection>
+        <LeftSidebar>
+          <Statistics />
+        </LeftSidebar>
+        <CenterSection>
+          <Timer onSolveComplete={handleSolveComplete} />
+        </CenterSection>
+        <RightSidebar>
+          <History />
+        </RightSidebar>
+      </MainLayout>
     </AppContainer>
   );
 }
