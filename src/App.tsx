@@ -1,30 +1,43 @@
 import styled from 'styled-components';
+import { Timer } from './components/Timer';
 
 const AppContainer = styled.div`
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: ${({ theme }) => theme.spacing.lg};
+`;
+
+const Header = styled.header`
+  padding: ${({ theme }) => theme.spacing.md} ${({ theme }) => theme.spacing.lg};
+  background-color: ${({ theme }) => theme.colors.surface};
+  border-bottom: 1px solid ${({ theme }) => theme.colors.surfaceLight};
 `;
 
 const Title = styled.h1`
-  font-size: ${({ theme }) => theme.fontSizes.xxl};
+  font-size: ${({ theme }) => theme.fontSizes.xl};
   color: ${({ theme }) => theme.colors.primary};
-  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  font-weight: 600;
 `;
 
-const Subtitle = styled.p`
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
+const MainContent = styled.main`
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 `;
 
 function App() {
+  const handleSolveComplete = (time: number) => {
+    console.log('Solve completed:', time, 'ms');
+  };
+
   return (
     <AppContainer>
-      <Title>Cube Timer</Title>
-      <Subtitle>Your Rubik's cube timing companion</Subtitle>
+      <Header>
+        <Title>Cube Timer</Title>
+      </Header>
+      <MainContent>
+        <Timer onSolveComplete={handleSolveComplete} />
+      </MainContent>
     </AppContainer>
   );
 }
