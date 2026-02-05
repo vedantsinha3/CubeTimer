@@ -7,18 +7,7 @@ type Modifier = '' | "'" | '2';
 const FACES: Face[] = ['R', 'L', 'U', 'D', 'F', 'B'];
 const MODIFIERS: Modifier[] = ['', "'", '2'];
 
-// Opposite faces - moves on opposite faces can't be consecutive
-// (e.g., R L R would be invalid as R and L are on the same axis)
-const OPPOSITE_FACES: Record<Face, Face> = {
-  R: 'L',
-  L: 'R',
-  U: 'D',
-  D: 'U',
-  F: 'B',
-  B: 'F',
-};
-
-// Faces on the same axis
+// Faces on the same axis (can't do consecutive moves on same axis, e.g. R L R)
 const AXIS_FACES: Record<Face, Face[]> = {
   R: ['R', 'L'],
   L: ['R', 'L'],

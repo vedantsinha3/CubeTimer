@@ -218,7 +218,7 @@ const AverageValue = styled.span<{ $isBest?: boolean }>`
 `;
 
 export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBestAo12, isBestAo100, isWorstSolve }: TimerProps) {
-  const { time, status, startTimer, stopTimer, resetTimer, setReady } = useTimer();
+  const { time, status, startTimer, stopTimer, setReady } = useTimer();
   const holdTimeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
   const solveRecordedRef = useRef(false);
