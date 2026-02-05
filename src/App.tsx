@@ -1,5 +1,8 @@
+import { useState, useRef } from 'react';
 import styled from 'styled-components';
 import { Timer } from './components/Timer';
+import { Scramble } from './components/Scramble';
+import { useSolves } from './context/SolvesContext';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -26,8 +29,19 @@ const MainContent = styled.main`
 `;
 
 function App() {
+  const [scrambleTrigger, setScrambleTrigger] = useState(0);
+  const currentScrambleRef = useRef<string>('');
+  const { addSolve } = useSolves();
+
+  const handleScrambleChange = (scramble: string) => {
+    currentScrambleRef.current = scramble;
+  };
+
   const handleSolveComplete = (time: number) => {
-    console.log('Solve completed:', time, 'ms');
+    // Save the solve
+    addSolve(time, currentScrambleRef.current);
+    // Trigger new scramble after solve
+    setScrambleTrigger((prev) => prev + 1);
   };
 
   return (
@@ -36,6 +50,10 @@ function App() {
         <Title>Cube Timer</Title>
       </Header>
       <MainContent>
+        <Scramble
+          onScrambleChange={handleScrambleChange}
+          triggerNew={scrambleTrigger}
+        />
         <Timer onSolveComplete={handleSolveComplete} />
       </MainContent>
     </AppContainer>
