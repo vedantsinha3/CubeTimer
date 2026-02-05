@@ -56,9 +56,11 @@ export function Timer({ onSolveComplete }: TimerProps) {
   const { time, status, startTimer, stopTimer, resetTimer, setReady } = useTimer();
   const holdTimeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
+  const solveRecordedRef = useRef(false);
 
   const handleStart = useCallback(() => {
     if (status === 'ready') {
+      solveRecordedRef.current = false; // Reset for new solve
       startTimer();
     }
   }, [status, startTimer]);
@@ -129,9 +131,10 @@ export function Timer({ onSolveComplete }: TimerProps) {
     };
   }, [handleHoldStart, handleHoldEnd]);
 
-  // Trigger callback when solve completes
+  // Trigger callback when solve completes (only once per solve)
   useEffect(() => {
-    if (status === 'stopped' && time > 0 && onSolveComplete) {
+    if (status === 'stopped' && time > 0 && onSolveComplete && !solveRecordedRef.current) {
+      solveRecordedRef.current = true;
       onSolveComplete(time);
     }
   }, [status, time, onSolveComplete]);
