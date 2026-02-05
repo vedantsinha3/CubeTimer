@@ -2,6 +2,8 @@
 
 A sleek, minimal web-based timer for 3x3 Rubik's cube solving with scramble generation, comprehensive statistics, and persistent solve history.
 
+**Live demo:** [https://cubetime-kappa.vercel.app/](https://cubetime-kappa.vercel.app/)
+
 ## Features
 
 ### Core Functionality
@@ -50,21 +52,6 @@ A sleek, minimal web-based timer for 3x3 Rubik's cube solving with scramble gene
 - **Ao5/Ao12/Ao50/Ao100** - Rolling averages (WCA style, drops best/worst for ao5+)
 - **Mean** - Average of all valid solves
 
-## Development
-
-```bash
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
-
-# Build for production
-npm run build
-
-# Preview production build
-npm run preview
-```
 
 ## Tech Stack
 
