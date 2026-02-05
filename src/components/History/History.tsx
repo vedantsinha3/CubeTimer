@@ -1,39 +1,28 @@
 import styled from 'styled-components';
 import { useSolves } from '../../context/SolvesContext';
 import { formatTime } from '../../hooks/useTimer';
-import { Solve, Penalty } from '../../types';
+import type { Solve, Penalty } from '../../types';
 import { getEffectiveTime } from '../../utils/statistics';
 
 const HistoryContainer = styled.div`
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-  padding: ${({ theme }) => theme.spacing.lg};
   display: flex;
   flex-direction: column;
-  max-height: 400px;
+  height: calc(100vh - 180px);
 `;
 
-const HistoryHeader = styled.div`
+const HistoryActions = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
+  justify-content: flex-end;
   margin-bottom: ${({ theme }) => theme.spacing.md};
-`;
-
-const HistoryTitle = styled.h2`
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  color: ${({ theme }) => theme.colors.text};
-  font-weight: 600;
 `;
 
 const ClearButton = styled.button`
   padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.sm};
   font-size: ${({ theme }) => theme.fontSizes.xs};
   color: ${({ theme }) => theme.colors.error};
-  background-color: transparent;
-  border: 1px solid ${({ theme }) => theme.colors.error};
   border-radius: ${({ theme }) => theme.borderRadius.sm};
-  transition: all 0.2s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.error};
@@ -47,36 +36,27 @@ const SolveList = styled.div`
   display: flex;
   flex-direction: column;
   gap: ${({ theme }) => theme.spacing.xs};
-
-  &::-webkit-scrollbar {
-    width: 6px;
-  }
-
-  &::-webkit-scrollbar-track {
-    background: ${({ theme }) => theme.colors.surfaceLight};
-    border-radius: 3px;
-  }
-
-  &::-webkit-scrollbar-thumb {
-    background: ${({ theme }) => theme.colors.secondary};
-    border-radius: 3px;
-  }
 `;
 
 const SolveItem = styled.div<{ $isDnf?: boolean }>`
   display: flex;
   align-items: center;
-  justify-content: space-between;
   padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   background-color: ${({ theme }) => theme.colors.surfaceLight};
   border-radius: ${({ theme }) => theme.borderRadius.md};
-  opacity: ${({ $isDnf }) => ($isDnf ? 0.6 : 1)};
+  opacity: ${({ $isDnf }) => ($isDnf ? 0.5 : 1)};
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: ${({ theme }) => theme.colors.surfaceHover};
+  }
 `;
 
 const SolveIndex = styled.span`
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  min-width: 30px;
+  color: ${({ theme }) => theme.colors.textDim};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  min-width: 32px;
+  font-family: ${({ theme }) => theme.fonts.mono};
 `;
 
 const SolveTime = styled.span<{ $isDnf?: boolean }>`
@@ -84,17 +64,16 @@ const SolveTime = styled.span<{ $isDnf?: boolean }>`
   font-size: ${({ theme }) => theme.fontSizes.md};
   font-weight: 600;
   color: ${({ theme, $isDnf }) =>
-    $isDnf ? theme.colors.error : theme.colors.text};
+    $isDnf ? theme.colors.textDim : theme.colors.text};
   text-decoration: ${({ $isDnf }) => ($isDnf ? 'line-through' : 'none')};
   flex: 1;
-  margin-left: ${({ theme }) => theme.spacing.sm};
 `;
 
 const PenaltyBadge = styled.span<{ $type: Penalty }>`
   font-size: ${({ theme }) => theme.fontSizes.xs};
   padding: 2px 6px;
   border-radius: ${({ theme }) => theme.borderRadius.sm};
-  margin-left: ${({ theme }) => theme.spacing.sm};
+  margin-right: ${({ theme }) => theme.spacing.sm};
   background-color: ${({ theme, $type }) =>
     $type === '+2' ? theme.colors.warning : theme.colors.error};
   color: ${({ theme }) => theme.colors.background};
@@ -103,41 +82,56 @@ const PenaltyBadge = styled.span<{ $type: Penalty }>`
 
 const Actions = styled.div`
   display: flex;
-  gap: ${({ theme }) => theme.spacing.xs};
+  gap: 4px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  ${SolveItem}:hover & {
+    opacity: 1;
+  }
 `;
 
 const ActionButton = styled.button<{ $active?: boolean; $variant?: 'danger' }>`
   padding: 4px 8px;
   font-size: ${({ theme }) => theme.fontSizes.xs};
+  font-weight: 500;
   color: ${({ theme, $active, $variant }) =>
     $variant === 'danger'
       ? theme.colors.error
       : $active
       ? theme.colors.background
       : theme.colors.textMuted};
-  background-color: ${({ theme, $active, $variant }) =>
-    $variant === 'danger'
-      ? 'transparent'
-      : $active
-      ? theme.colors.warning
-      : theme.colors.surface};
-  border: 1px solid
-    ${({ theme, $variant }) =>
-      $variant === 'danger' ? theme.colors.error : theme.colors.surfaceLight};
+  background-color: ${({ theme, $active }) =>
+    $active ? theme.colors.warning : theme.colors.surface};
   border-radius: ${({ theme }) => theme.borderRadius.sm};
-  transition: all 0.15s ease;
 
   &:hover {
-    background-color: ${({ theme, $variant }) =>
-      $variant === 'danger' ? theme.colors.error : theme.colors.secondary};
+    background-color: ${({ theme, $variant, $active }) =>
+      $variant === 'danger'
+        ? theme.colors.error
+        : $active
+        ? theme.colors.warning
+        : theme.colors.surfaceHover};
     color: ${({ theme }) => theme.colors.text};
   }
 `;
 
 const EmptyState = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  color: ${({ theme }) => theme.colors.textDim};
+  font-size: ${({ theme }) => theme.fontSizes.sm};
   text-align: center;
   padding: ${({ theme }) => theme.spacing.xl};
-  color: ${({ theme }) => theme.colors.textMuted};
+`;
+
+const EmptyIcon = styled.span`
+  font-size: 2rem;
+  margin-bottom: ${({ theme }) => theme.spacing.md};
+  opacity: 0.5;
 `;
 
 function formatSolveTime(solve: Solve): string {
@@ -174,7 +168,7 @@ function HistoryItem({
 
   return (
     <SolveItem $isDnf={isDnf}>
-      <SolveIndex>{index}.</SolveIndex>
+      <SolveIndex>{index}</SolveIndex>
       <SolveTime $isDnf={isDnf}>{formatSolveTime(solve)}</SolveTime>
       {solve.penalty !== 'none' && (
         <PenaltyBadge $type={solve.penalty}>
@@ -200,33 +194,37 @@ export function History() {
   const { solves, deleteSolve, updatePenalty, clearAllSolves } = useSolves();
 
   const handleClear = () => {
-    if (window.confirm('Are you sure you want to clear all solves?')) {
+    if (window.confirm('Clear all solves?')) {
       clearAllSolves();
     }
   };
 
+  if (solves.length === 0) {
+    return (
+      <HistoryContainer>
+        <EmptyState>
+          <EmptyIcon>⏱️</EmptyIcon>
+          No solves yet
+        </EmptyState>
+      </HistoryContainer>
+    );
+  }
+
   return (
     <HistoryContainer>
-      <HistoryHeader>
-        <HistoryTitle>History</HistoryTitle>
-        {solves.length > 0 && (
-          <ClearButton onClick={handleClear}>Clear All</ClearButton>
-        )}
-      </HistoryHeader>
+      <HistoryActions>
+        <ClearButton onClick={handleClear}>Clear All</ClearButton>
+      </HistoryActions>
       <SolveList>
-        {solves.length === 0 ? (
-          <EmptyState>No solves yet. Start timing!</EmptyState>
-        ) : (
-          solves.map((solve, i) => (
-            <HistoryItem
-              key={solve.id}
-              solve={solve}
-              index={solves.length - i}
-              onDelete={deleteSolve}
-              onPenaltyChange={updatePenalty}
-            />
-          ))
-        )}
+        {solves.map((solve, i) => (
+          <HistoryItem
+            key={solve.id}
+            solve={solve}
+            index={solves.length - i}
+            onDelete={deleteSolve}
+            onPenaltyChange={updatePenalty}
+          />
+        ))}
       </SolveList>
     </HistoryContainer>
   );

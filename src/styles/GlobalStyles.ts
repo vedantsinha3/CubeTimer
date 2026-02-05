@@ -1,5 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
-import { Theme } from './theme';
+import type { Theme } from './theme';
 
 export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
   * {
@@ -33,6 +33,7 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
     font-family: inherit;
     border: none;
     background: none;
+    transition: all 0.15s ease;
   }
 
   a {
@@ -44,9 +45,26 @@ export const GlobalStyles = createGlobalStyle<{ theme: Theme }>`
     list-style: none;
   }
 
-  /* Prevent text selection during timing */
-  .no-select {
-    user-select: none;
-    -webkit-user-select: none;
+  ::selection {
+    background-color: ${({ theme }) => theme.colors.primary};
+    color: ${({ theme }) => theme.colors.background};
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${({ theme }) => theme.colors.surfaceLight};
+    border-radius: 3px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${({ theme }) => theme.colors.textDim};
   }
 `;

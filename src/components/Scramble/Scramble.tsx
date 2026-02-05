@@ -12,51 +12,36 @@ const ScrambleContainer = styled.div`
   flex-direction: column;
   align-items: center;
   padding: ${({ theme }) => theme.spacing.lg};
-  background-color: ${({ theme }) => theme.colors.surface};
-  border-radius: ${({ theme }) => theme.borderRadius.lg};
-`;
-
-const ScrambleLabel = styled.span`
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  color: ${({ theme }) => theme.colors.textMuted};
-  margin-bottom: ${({ theme }) => theme.spacing.sm};
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
+  max-width: 600px;
+  width: 100%;
 `;
 
 const ScrambleText = styled.div`
   font-family: ${({ theme }) => theme.fonts.mono};
-  font-size: ${({ theme }) => theme.fontSizes.lg};
-  color: ${({ theme }) => theme.colors.text};
+  font-size: ${({ theme }) => theme.fontSizes.md};
+  color: ${({ theme }) => theme.colors.textMuted};
   text-align: center;
-  line-height: 1.8;
-  letter-spacing: 0.08em;
-  max-width: 700px;
-  word-wrap: break-word;
+  line-height: 2;
+  letter-spacing: 0.1em;
+  word-spacing: 0.3em;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    font-size: ${({ theme }) => theme.fontSizes.md};
+    font-size: ${({ theme }) => theme.fontSizes.sm};
   }
 `;
 
-const RegenerateButton = styled.button`
+const RefreshButton = styled.button`
   margin-top: ${({ theme }) => theme.spacing.md};
-  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.lg};
-  background-color: ${({ theme }) => theme.colors.surfaceLight};
-  color: ${({ theme }) => theme.colors.textMuted};
-  font-size: ${({ theme }) => theme.fontSizes.sm};
-  border-radius: ${({ theme }) => theme.borderRadius.md};
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
+  padding: ${({ theme }) => theme.spacing.xs} ${({ theme }) => theme.spacing.md};
+  color: ${({ theme }) => theme.colors.textDim};
+  font-size: ${({ theme }) => theme.fontSizes.xs};
+  border-radius: ${({ theme }) => theme.borderRadius.full};
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
 
   &:hover {
-    background-color: ${({ theme }) => theme.colors.secondary};
     color: ${({ theme }) => theme.colors.text};
-    border-color: ${({ theme }) => theme.colors.primary};
-  }
-
-  &:active {
-    transform: scale(0.98);
+    background-color: ${({ theme }) => theme.colors.surfaceLight};
   }
 `;
 
@@ -81,9 +66,8 @@ export function Scramble({ onScrambleChange, triggerNew }: ScrambleProps) {
 
   return (
     <ScrambleContainer>
-      <ScrambleLabel>Scramble</ScrambleLabel>
       <ScrambleText>{scramble}</ScrambleText>
-      <RegenerateButton onClick={regenerate}>New Scramble</RegenerateButton>
+      <RefreshButton onClick={regenerate}>New Scramble</RefreshButton>
     </ScrambleContainer>
   );
 }

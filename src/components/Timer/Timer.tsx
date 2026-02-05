@@ -1,13 +1,18 @@
 import { useEffect, useRef, useCallback } from 'react';
-import styled from 'styled-components';
+import styled, { keyframes } from 'styled-components';
 import { useTimer, formatTime } from '../../hooks/useTimer';
 import type { TimerStatus } from '../../hooks/useTimer';
 
-const READY_HOLD_TIME = 300; // ms to hold spacebar before ready
+const READY_HOLD_TIME = 300;
 
 interface TimerProps {
   onSolveComplete?: (time: number) => void;
 }
+
+const pulse = keyframes`
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+`;
 
 const TimerContainer = styled.div`
   display: flex;
@@ -19,12 +24,13 @@ const TimerContainer = styled.div`
   user-select: none;
   cursor: pointer;
   padding: ${({ theme }) => theme.spacing.xl};
+  -webkit-tap-highlight-color: transparent;
 `;
 
 const TimeDisplay = styled.div<{ $status: TimerStatus }>`
   font-family: ${({ theme }) => theme.fonts.mono};
   font-size: ${({ theme }) => theme.fontSizes.timer};
-  font-weight: 700;
+  font-weight: 600;
   color: ${({ theme, $status }) => {
     switch ($status) {
       case 'ready':
@@ -35,8 +41,9 @@ const TimeDisplay = styled.div<{ $status: TimerStatus }>`
         return theme.colors.text;
     }
   }};
+  letter-spacing: -0.03em;
   transition: color 0.15s ease;
-  letter-spacing: -0.02em;
+  animation: ${({ $status }) => ($status === 'running' ? pulse : 'none')} 2s ease-in-out infinite;
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     font-size: ${({ theme }) => theme.fontSizes.timerMobile};
@@ -44,12 +51,33 @@ const TimeDisplay = styled.div<{ $status: TimerStatus }>`
 `;
 
 const Instructions = styled.p<{ $visible: boolean }>`
-  color: ${({ theme }) => theme.colors.textMuted};
+  color: ${({ theme }) => theme.colors.textDim};
   font-size: ${({ theme }) => theme.fontSizes.sm};
-  margin-top: ${({ theme }) => theme.spacing.lg};
+  margin-top: ${({ theme }) => theme.spacing.xl};
   opacity: ${({ $visible }) => ($visible ? 1 : 0)};
   transition: opacity 0.2s ease;
   text-align: center;
+  letter-spacing: 0.02em;
+`;
+
+const StatusDot = styled.div<{ $status: TimerStatus }>`
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  margin-bottom: ${({ theme }) => theme.spacing.lg};
+  background-color: ${({ theme, $status }) => {
+    switch ($status) {
+      case 'ready':
+        return theme.colors.timerReady;
+      case 'running':
+        return theme.colors.warning;
+      case 'stopped':
+        return theme.colors.primary;
+      default:
+        return theme.colors.textDim;
+    }
+  }};
+  transition: background-color 0.15s ease;
 `;
 
 export function Timer({ onSolveComplete }: TimerProps) {
@@ -60,7 +88,7 @@ export function Timer({ onSolveComplete }: TimerProps) {
 
   const handleStart = useCallback(() => {
     if (status === 'ready') {
-      solveRecordedRef.current = false; // Reset for new solve
+      solveRecordedRef.current = false;
       startTimer();
     }
   }, [status, startTimer]);
@@ -83,7 +111,6 @@ export function Timer({ onSolveComplete }: TimerProps) {
 
     isHoldingRef.current = true;
 
-    // Start a timeout to set ready state
     holdTimeoutRef.current = window.setTimeout(() => {
       if (isHoldingRef.current) {
         setReady(true);
@@ -106,7 +133,6 @@ export function Timer({ onSolveComplete }: TimerProps) {
     }
   }, [status, handleStart, setReady]);
 
-  // Keyboard event handlers
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.code === 'Space' && !e.repeat) {
@@ -131,7 +157,6 @@ export function Timer({ onSolveComplete }: TimerProps) {
     };
   }, [handleHoldStart, handleHoldEnd]);
 
-  // Trigger callback when solve completes (only once per solve)
   useEffect(() => {
     if (status === 'stopped' && time > 0 && onSolveComplete && !solveRecordedRef.current) {
       solveRecordedRef.current = true;
@@ -139,7 +164,6 @@ export function Timer({ onSolveComplete }: TimerProps) {
     }
   }, [status, time, onSolveComplete]);
 
-  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (holdTimeoutRef.current !== null) {
@@ -151,13 +175,13 @@ export function Timer({ onSolveComplete }: TimerProps) {
   const getInstructions = () => {
     switch (status) {
       case 'idle':
-        return 'Hold SPACE to get ready, release to start';
+        return 'Hold SPACE to ready';
       case 'ready':
-        return 'Release to start!';
+        return 'Release to start';
       case 'running':
-        return 'Press SPACE to stop';
+        return '';
       case 'stopped':
-        return 'Hold SPACE for new solve';
+        return 'Hold SPACE for next';
       default:
         return '';
     }
@@ -175,6 +199,7 @@ export function Timer({ onSolveComplete }: TimerProps) {
       onTouchStart={handleHoldStart}
       onTouchEnd={handleHoldEnd}
     >
+      <StatusDot $status={status} />
       <TimeDisplay $status={status}>{formatTime(time)}</TimeDisplay>
       <Instructions $visible={status !== 'running'}>
         {getInstructions()}
