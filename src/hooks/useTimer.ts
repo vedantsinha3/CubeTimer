@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { TimerState } from '../types';
+import type { TimerState } from '../types';
 
 export type TimerStatus = 'idle' | 'ready' | 'running' | 'stopped';
 
