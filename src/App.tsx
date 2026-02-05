@@ -178,7 +178,8 @@ function App() {
   return (
     <AppContainer>
       <Header>
-        <Logo>Cube Timer</Logo>
+        
+        <Logo>CubeTimer</Logo>
         <HeaderActions>
           <NavButton
             $active={statsOpen}
