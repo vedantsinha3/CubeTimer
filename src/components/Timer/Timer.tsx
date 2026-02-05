@@ -249,10 +249,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
       return;
     }
 
-    if (status === 'stopped') {
-      resetTimer();
-    }
-
+    // When stopped, do not reset - keep showing previous solve until user starts next one
     isHoldingRef.current = true;
 
     holdTimeoutRef.current = window.setTimeout(() => {
@@ -260,7 +257,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
         setReady(true);
       }
     }, READY_HOLD_TIME);
-  }, [status, handleStop, resetTimer, setReady]);
+  }, [status, handleStop, setReady]);
 
   const handleHoldEnd = useCallback(() => {
     isHoldingRef.current = false;
@@ -279,6 +276,11 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (status === 'running') {
+        e.preventDefault();
+        stopTimer();
+        return;
+      }
       if (e.code === 'Space' && !e.repeat) {
         e.preventDefault();
         handleHoldStart();
@@ -299,7 +301,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
       window.removeEventListener('keydown', handleKeyDown);
       window.removeEventListener('keyup', handleKeyUp);
     };
-  }, [handleHoldStart, handleHoldEnd]);
+  }, [status, handleHoldStart, handleHoldEnd, stopTimer]);
 
   useEffect(() => {
     if (status === 'stopped' && time > 0 && onSolveComplete && !solveRecordedRef.current) {
@@ -323,7 +325,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
       case 'ready':
         return 'Release to start';
       case 'running':
-        return '';
+        return 'Press any key to stop';
       case 'stopped':
         return 'Hold SPACE for next';
       default:
@@ -365,7 +367,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
           <AverageValue $isBest={isBestAo100}>{ao100 != null ? formatTime(ao100) : '—'}</AverageValue>
         </AverageItem>
       </AveragesRow>
-      <Instructions $visible={status !== 'running'}>
+      <Instructions $visible={true}>
         {getInstructions()}
       </Instructions>
     </TimerContainer>
