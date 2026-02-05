@@ -97,6 +97,21 @@ export function Statistics() {
         <StatValue>{formatStatTime(stats.ao100)}</StatValue>
       </StatRow>
 
+      <SectionTitle>Best Averages</SectionTitle>
+
+      <StatRow>
+        <StatLabel>Best Ao5</StatLabel>
+        <StatValue $highlight>{formatStatTime(stats.bestAo5)}</StatValue>
+      </StatRow>
+      <StatRow>
+        <StatLabel>Best Ao12</StatLabel>
+        <StatValue $highlight>{formatStatTime(stats.bestAo12)}</StatValue>
+      </StatRow>
+      <StatRow>
+        <StatLabel>Best Ao100</StatLabel>
+        <StatValue $highlight>{formatStatTime(stats.bestAo100)}</StatValue>
+      </StatRow>
+
       <Divider />
 
       <StatRow>

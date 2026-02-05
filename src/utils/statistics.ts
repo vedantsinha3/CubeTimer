@@ -146,6 +146,9 @@ export interface Statistics {
   ao12: number | null;
   ao50: number | null;
   ao100: number | null;
+  bestAo5: number | null;
+  bestAo12: number | null;
+  bestAo100: number | null;
   mean: number | null;
   count: {
     total: number;
@@ -165,6 +168,9 @@ export function calculateAllStatistics(solves: Solve[]): Statistics {
     ao12: calculateAverageOfN(solves, 12),
     ao50: calculateAverageOfN(solves, 50),
     ao100: calculateAverageOfN(solves, 100),
+    bestAo5: getBestAverageOfN(solves, 5),
+    bestAo12: getBestAverageOfN(solves, 12),
+    bestAo100: getBestAverageOfN(solves, 100),
     mean: getMean(solves),
     count: getSolveCount(solves),
   };
