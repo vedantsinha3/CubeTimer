@@ -1,4 +1,4 @@
-import { Solve } from '../types';
+import type { Solve } from '../types';
 
 /**
  * Get the effective time for a solve (accounting for penalties)

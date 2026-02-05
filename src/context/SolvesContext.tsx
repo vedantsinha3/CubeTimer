@@ -1,5 +1,6 @@
-import { createContext, useContext, useCallback, ReactNode } from 'react';
-import { Solve, Penalty } from '../types';
+import { createContext, useContext, useCallback } from 'react';
+import type { ReactNode } from 'react';
+import type { Solve, Penalty } from '../types';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 
 interface SolvesContextType {
