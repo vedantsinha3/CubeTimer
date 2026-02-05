@@ -1,6 +1,7 @@
 import { useEffect, useRef, useCallback } from 'react';
 import styled from 'styled-components';
-import { useTimer, formatTime, TimerStatus } from '../../hooks/useTimer';
+import { useTimer, formatTime } from '../../hooks/useTimer';
+import type { TimerStatus } from '../../hooks/useTimer';
 
 const READY_HOLD_TIME = 300; // ms to hold spacebar before ready
 
