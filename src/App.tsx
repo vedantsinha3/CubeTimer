@@ -5,6 +5,7 @@ import { Scramble } from './components/Scramble';
 import { Statistics } from './components/Statistics';
 import { History } from './components/History';
 import { Confetti } from './components/Confetti';
+import { About } from './components/About';
 import { useSolves } from './context/SolvesContext';
 import { calculateAverageOfN, getBestTime, getBestAverageOfN, getWorstTime, getEffectiveTime } from './utils/statistics';
 
@@ -132,6 +133,7 @@ function App() {
   const [scrambleTrigger, setScrambleTrigger] = useState(0);
   const [statsOpen, setStatsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
+  const [aboutOpen, setAboutOpen] = useState(false);
   const [isPB, setIsPB] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
   const currentScrambleRef = useRef<string>('');
@@ -173,7 +175,7 @@ function App() {
     setShowConfetti(false);
   }, []);
 
-  const anyPanelOpen = statsOpen || historyOpen;
+  const anyPanelOpen = statsOpen || historyOpen || aboutOpen;
 
   return (
     <AppContainer>
@@ -193,6 +195,12 @@ function App() {
           >
             History
           </NavButton>
+          <NavButton
+            $active={aboutOpen}
+            onClick={() => setAboutOpen(!aboutOpen)}
+          >
+            About
+          </NavButton>
         </HeaderActions>
       </Header>
 
@@ -201,6 +209,7 @@ function App() {
         onClick={() => {
           setStatsOpen(false);
           setHistoryOpen(false);
+          setAboutOpen(false);
         }}
       />
 
@@ -239,6 +248,8 @@ function App() {
       </MainContent>
 
       <Confetti active={showConfetti} onComplete={handleConfettiComplete} />
+
+      {aboutOpen && <About onClose={() => setAboutOpen(false)} />}
     </AppContainer>
   );
 }
