@@ -7,6 +7,7 @@ const READY_HOLD_TIME = 300;
 
 interface TimerProps {
   onSolveComplete?: (time: number) => void;
+  ao5?: number | null;
 }
 
 const pulse = keyframes`
@@ -80,7 +81,22 @@ const StatusDot = styled.div<{ $status: TimerStatus }>`
   transition: background-color 0.15s ease;
 `;
 
-export function Timer({ onSolveComplete }: TimerProps) {
+const Ao5Display = styled.div<{ $visible: boolean }>`
+  font-family: ${({ theme }) => theme.fonts.mono};
+  font-size: ${({ theme }) => theme.fontSizes.lg};
+  color: ${({ theme }) => theme.colors.textMuted};
+  margin-top: ${({ theme }) => theme.spacing.md};
+  opacity: ${({ $visible }) => ($visible ? 1 : 0)};
+  transition: opacity 0.2s ease;
+
+  span {
+    color: ${({ theme }) => theme.colors.textDim};
+    font-size: ${({ theme }) => theme.fontSizes.sm};
+    margin-right: ${({ theme }) => theme.spacing.sm};
+  }
+`;
+
+export function Timer({ onSolveComplete, ao5 }: TimerProps) {
   const { time, status, startTimer, stopTimer, resetTimer, setReady } = useTimer();
   const holdTimeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
@@ -201,6 +217,10 @@ export function Timer({ onSolveComplete }: TimerProps) {
     >
       <StatusDot $status={status} />
       <TimeDisplay $status={status}>{formatTime(time)}</TimeDisplay>
+      <Ao5Display $visible={status !== 'running' && ao5 !== null && ao5 !== undefined}>
+        <span>ao5</span>
+        {ao5 !== null && ao5 !== undefined ? formatTime(ao5) : '—'}
+      </Ao5Display>
       <Instructions $visible={status !== 'running'}>
         {getInstructions()}
       </Instructions>

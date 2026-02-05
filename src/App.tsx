@@ -5,6 +5,7 @@ import { Scramble } from './components/Scramble';
 import { Statistics } from './components/Statistics';
 import { History } from './components/History';
 import { useSolves } from './context/SolvesContext';
+import { calculateAverageOfN } from './utils/statistics';
 
 const AppContainer = styled.div`
   min-height: 100vh;
@@ -131,7 +132,8 @@ function App() {
   const [statsOpen, setStatsOpen] = useState(false);
   const [historyOpen, setHistoryOpen] = useState(false);
   const currentScrambleRef = useRef<string>('');
-  const { addSolve } = useSolves();
+  const { solves, addSolve } = useSolves();
+  const ao5 = calculateAverageOfN(solves, 5);
 
   const handleScrambleChange = (scramble: string) => {
     currentScrambleRef.current = scramble;
@@ -193,7 +195,7 @@ function App() {
           onScrambleChange={handleScrambleChange}
           triggerNew={scrambleTrigger}
         />
-        <Timer onSolveComplete={handleSolveComplete} />
+        <Timer onSolveComplete={handleSolveComplete} ao5={ao5} />
       </MainContent>
     </AppContainer>
   );
