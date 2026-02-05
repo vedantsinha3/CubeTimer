@@ -13,7 +13,7 @@ const WORST_MESSAGES = [
   'Room for improvement!',
   'New worst! (we\'ve all been there)',
   'The cube wins this round',
-  
+
 ];
 
 interface TimerProps {
@@ -23,6 +23,7 @@ interface TimerProps {
   ao100?: number | null;
   isPB?: boolean;
   isBestAo5?: boolean;
+  isBestAo12?: boolean;
   isBestAo100?: boolean;
   isWorstSolve?: boolean;
 }
@@ -216,7 +217,7 @@ const AverageValue = styled.span<{ $isBest?: boolean }>`
   animation: ${({ $isBest }) => ($isBest ? averageGlow : 'none')} 2s ease-in-out infinite;
 `;
 
-export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBestAo100, isWorstSolve }: TimerProps) {
+export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBestAo12, isBestAo100, isWorstSolve }: TimerProps) {
   const { time, status, startTimer, stopTimer, resetTimer, setReady } = useTimer();
   const holdTimeoutRef = useRef<number | null>(null);
   const isHoldingRef = useRef(false);
@@ -357,7 +358,7 @@ export function Timer({ onSolveComplete, ao5, ao12, ao100, isPB, isBestAo5, isBe
         </AverageItem>
         <AverageItem>
           <AverageLabel>ao12</AverageLabel>
-          <AverageValue>{ao12 != null ? formatTime(ao12) : '—'}</AverageValue>
+          <AverageValue $isBest={isBestAo12}>{ao12 != null ? formatTime(ao12) : '—'}</AverageValue>
         </AverageItem>
         <AverageItem>
           <AverageLabel>ao100</AverageLabel>

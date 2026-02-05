@@ -140,8 +140,10 @@ function App() {
   const ao12 = calculateAverageOfN(solves, 12);
   const ao100 = calculateAverageOfN(solves, 100);
   const bestAo5 = getBestAverageOfN(solves, 5);
+  const bestAo12 = getBestAverageOfN(solves, 12);
   const bestAo100 = getBestAverageOfN(solves, 100);
   const isBestAo5 = ao5 != null && bestAo5 != null && Math.abs(ao5 - bestAo5) < 1;
+  const isBestAo12 = ao12 != null && bestAo12 != null && Math.abs(ao12 - bestAo12) < 1;
   const isBestAo100 = ao100 != null && bestAo100 != null && Math.abs(ao100 - bestAo100) < 1;
   const worstTime = getWorstTime(solves);
   const latestSolveTime = solves.length > 0 ? getEffectiveTime(solves[0]) : null;
@@ -229,6 +231,7 @@ function App() {
           ao100={ao100}
           isPB={isPB}
           isBestAo5={isBestAo5}
+          isBestAo12={isBestAo12}
           isBestAo100={isBestAo100}
           isWorstSolve={isWorstSolve}
         />
