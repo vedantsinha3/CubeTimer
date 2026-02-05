@@ -44,17 +44,14 @@ const HeaderActions = styled.div`
   gap: ${({ theme }) => theme.spacing.sm};
 `;
 
-const IconButton = styled.button<{ $active?: boolean }>`
-  width: 40px;
-  height: 40px;
+const NavButton = styled.button<{ $active?: boolean }>`
+  padding: ${({ theme }) => theme.spacing.sm} ${({ theme }) => theme.spacing.md};
   border-radius: ${({ theme }) => theme.borderRadius.md};
-  display: flex;
-  align-items: center;
-  justify-content: center;
   color: ${({ theme, $active }) => ($active ? theme.colors.primary : theme.colors.textMuted)};
   background-color: ${({ theme, $active }) =>
     $active ? theme.colors.surfaceLight : 'transparent'};
-  font-size: 1.25rem;
+  font-size: ${({ theme }) => theme.fontSizes.sm};
+  font-weight: 500;
 
   &:hover {
     background-color: ${({ theme }) => theme.colors.surfaceLight};
@@ -152,20 +149,18 @@ function App() {
       <Header>
         <Logo>Cube Timer</Logo>
         <HeaderActions>
-          <IconButton
+          <NavButton
             $active={statsOpen}
             onClick={() => setStatsOpen(!statsOpen)}
-            title="Statistics"
           >
-            📊
-          </IconButton>
-          <IconButton
+            Stats
+          </NavButton>
+          <NavButton
             $active={historyOpen}
             onClick={() => setHistoryOpen(!historyOpen)}
-            title="History"
           >
-            📋
-          </IconButton>
+            History
+          </NavButton>
         </HeaderActions>
       </Header>
 
